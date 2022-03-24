@@ -48,8 +48,11 @@ public class SheetDataReader
         var data = GetSheetData(@namespace, @class);
         var generator = new CodeGenerator(); 
         generator.UsingNamespace("System.Collections.Generic"); 
+        generator.UsingNamespace("System.Reflection"); 
+        generator.UsingNamespace("System.Collections");
+        generator.UsingNamespace("System");  
         generator.CreateClass(@namespace, @class); 
-        
+
         // Add List
         { 
             var className = data.ClassName;
@@ -72,6 +75,29 @@ public class SheetDataReader
             generator.AddField("public",keyword, name, null);
         }
 
+        generator.AppendLine($@"private static string FileName => ""{@namespace}.{@class}"" + Extension;");
+        generator.AppendLine($@"private static string Extension => "".csv"" + Extension;");
+        generator.AddStaticMethod("public", "void", "Load", $@"
+SheetData sheetData = UniGoogleSheets.SheetDataReader.GetSheetData(typeof({@class}).Namespace, nameof({@class})); 
+FieldInfo[] fields = typeof({@class}).GetFields(BindingFlags.Public | BindingFlags.Instance);
+int idx = 0; 
+for (int row = 0; row < sheetData.RowCount; row++)
+{{
+var origin = new {@class}();
+var datas = sheetData.GetRowValues(row); 
+
+
+for(int col = 0; col < datas.Count; col++)
+{{
+var parserData = UniGoogleSheets.ParserContainer[sheetData.FieldInfos[col].FieldTypeKeyword]; 
+var fieldValue = parserData.Parser.Read(datas[col]); // TODO :: 여기서 데이터를 처리한다.     
+fields[col].SetValue(origin, fieldValue);
+}} 
+
+ List.Add(origin); 
+}}
+
+");
         return generator.GenerateCode();
     }
     public SheetData GetSheetData(string @namespace, string @class)

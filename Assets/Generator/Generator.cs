@@ -21,7 +21,7 @@ public class CodeGenerator
     
     public void UsingNamespace(string namespaceName)
     {      
-        if(status != Status.NONE) throw  new Exception("call UsingNamespace before any other method");
+        if(status > Status.CURRENT_NAMESPACE ) throw  new Exception("call UsingNamespace before any other method");
         status = Status.CURRENT_NAMESPACE;
         namespaceBuilder.AppendLine("using " + namespaceName + ";");
     }
@@ -47,6 +47,12 @@ public class CodeGenerator
         {
             fieldBuilder.Append($"public {fieldType} {fieldName} = {defaultValue};\n");
         } 
+    }
+
+    
+    public void AppendLine(string line)
+    {
+        fieldBuilder.Append(line+"\n"); 
     }
 
     public void AddField(string accessor, string fieldType, string fieldName, string defaultValue = null)

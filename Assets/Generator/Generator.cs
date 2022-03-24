@@ -54,6 +54,10 @@ class CodeGenerator
     {
         if(status < Status.CURRENT_CLASS) throw  new Exception("class must be created before methods");
         status = Status.NONE;
+        classBuilder.Clear();
+        fieldBuilder.Clear();
+        methodBuilder.Clear();
+        namespaceBuilder.Clear();
         return namespaceBuilder.ToString() + classBuilder.ToString().Replace(LAST_MARKER, fieldBuilder.ToString() + methodBuilder.ToString());
     }
     

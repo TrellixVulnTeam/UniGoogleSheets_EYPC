@@ -6,11 +6,12 @@ public class UniGoogleSheets
 {
     public UniGoogleSheets()
     {
-        this.context = new UniGoogleSheetsContext(new ParserContainer());
+        this.context = new UniGoogleSheetsContext(new ParserContainer()); 
     }
     private UniGoogleSheetsContext context;
     ParserContainer ParserContainer => context.ParserContainer;
-
+    public CSVReader CSVReader => context.CSVReader;
+    
     
 
     public IBaseParser GetParser(string typeKeyword)

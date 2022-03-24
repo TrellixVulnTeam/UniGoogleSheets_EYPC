@@ -4,7 +4,7 @@
     {
         this.ParserContainer = new ParserContainer();
         this.ParserContainer.Initialize();
-        this.CSVReader = new CSVReader();
+        this.CSVReader = new CSVReader("TableData/");
     }
 
     public readonly ParserContainer ParserContainer;

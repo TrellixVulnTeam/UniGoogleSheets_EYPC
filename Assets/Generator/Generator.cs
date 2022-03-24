@@ -5,10 +5,10 @@ using System.Text;
 public class CodeGenerator
 {
     private readonly string LAST_MARKER = "__END__POINT__";
-    private StringBuilder classBuilder = new StringBuilder();
-    private StringBuilder fieldBuilder = new StringBuilder();
-    private StringBuilder methodBuilder = new StringBuilder();
-    private StringBuilder namespaceBuilder = new StringBuilder();
+    private readonly StringBuilder classBuilder = new StringBuilder();
+    private readonly StringBuilder fieldBuilder = new StringBuilder();
+    private readonly StringBuilder methodBuilder = new StringBuilder();
+    private readonly StringBuilder namespaceBuilder = new StringBuilder();
     private Status status;
     enum Status
     {
@@ -18,6 +18,7 @@ public class CodeGenerator
         CURRENT_ADD_FIELDS,
         CURRENT_ADD_METHODS
     }
+    
     public void UsingNamespace(string namespaceName)
     {      
         if(status != Status.NONE) throw  new Exception("call UsingNamespace before any other method");

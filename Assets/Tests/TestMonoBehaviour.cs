@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
-using System.Collections.Generic; 
+using System.Collections.Generic;
+using System.IO.Compression;
+using Data;
 using UnityEngine;
 
 public class TestMonoBehaviour : MonoBehaviour
@@ -10,10 +12,7 @@ public class TestMonoBehaviour : MonoBehaviour
     {
         UniGoogleSheets test = new UniGoogleSheets();
         var parser = test.GetParser("int");
-        Debug.Log(parser.Read("1000"));
-        
-
-
+        Debug.Log(parser.Read("1000")); 
         CodeGenerator generator = new CodeGenerator();
         generator.UsingNamespace("System.Collections.Generic"); 
         generator.CreateClass("Game.Test", "ClassNameTest"); 
@@ -23,7 +22,14 @@ public class TestMonoBehaviour : MonoBehaviour
         generator.AddMethod("void", "GetUsers", "//code");
 
         var code = generator.GenerateCode();
-        Debug.Log(code);
+        Debug.Log(code);  
+
+
+        var data = test.CSVReader.CSVFileToSheetClassData("Game.Data", "Test");
+        foreach (var t in data.Datas)
+        {
+            Debug.Log(t);
+        }
     }
 
     // Update is called once per frame

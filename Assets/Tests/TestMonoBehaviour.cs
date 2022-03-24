@@ -10,26 +10,11 @@ public class TestMonoBehaviour : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        UniGoogleSheets test = new UniGoogleSheets();
-        var parser = test.GetParser("int");
-        Debug.Log(parser.Read("1000")); 
-        CodeGenerator generator = new CodeGenerator();
-        generator.UsingNamespace("System.Collections.Generic"); 
-        generator.CreateClass("Game.Test", "ClassNameTest"); 
-        generator.AddField("int", "userId");
-        generator.AddField("int", "userId2");
-        generator.AddField("int", "userId3"); 
-        generator.AddMethod("void", "GetUsers", "//code");
+        var data = UniGoogleSheets.SheetDataReader.ReadFromCSVData("Game.Data", "Test");
 
-        var code = generator.GenerateCode();
-        Debug.Log(code);  
+        var code = UniGoogleSheets.SheetDataReader.GenerateCode("Game.Data", "Test");
 
-
-        var data = test.CSVReader.CSVFileToSheetClassData("Game.Data", "Test");
-        foreach (var t in data.Datas)
-        {
-            Debug.Log(t);
-        }
+        Debug.Log(code);
     }
 
     // Update is called once per frame

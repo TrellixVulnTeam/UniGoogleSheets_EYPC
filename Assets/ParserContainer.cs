@@ -16,7 +16,12 @@ public struct ParserData
 
 
 public class ParserContainer : Dictionary<string, ParserData>
-{ 
+{
+    public ParserContainer ()
+    {
+        Initialize();
+    }
+
     public void Initialize()
     {
         HashSet<string> duplicateDeclartionChecker = new HashSet<string>();

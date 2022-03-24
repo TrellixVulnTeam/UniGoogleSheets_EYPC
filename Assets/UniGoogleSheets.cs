@@ -2,19 +2,11 @@
 using UnityEngine;
 
 
-public class UniGoogleSheets
+public static class UniGoogleSheets
 {
-    public UniGoogleSheets()
-    {
-        this.context = new UniGoogleSheetsContext(new ParserContainer()); 
-    }
-    private UniGoogleSheetsContext context;
-    ParserContainer ParserContainer => context.ParserContainer;
-    public CSVReader CSVReader => context.CSVReader;
-    
-    
-
-    public IBaseParser GetParser(string typeKeyword)
+    public static readonly ParserContainer ParserContainer = new ParserContainer();
+    public static readonly SheetDataReader SheetDataReader = new SheetDataReader("TableData/"); 
+    public static IBaseParser GetParser(string typeKeyword)
     {
         try
         {

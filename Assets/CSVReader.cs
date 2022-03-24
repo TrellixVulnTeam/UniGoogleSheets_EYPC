@@ -1,44 +1,29 @@
-﻿/*
- * NReco CSV library (https://github.com/nreco/csv/)
- * Copyright 2017-2018 Vitaliy Fedorchenko
- * Distributed under the MIT license
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
-
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
+using System.Collections.Generic; 
 using System.IO;
 
 namespace NReco.Csv {
 
 	/// <summary>
 	/// Fast and memory efficient implementation of CSV reader (3x times faster than CsvHelper).
-	/// </summary>
-	/// <remarks>API is similar to CSVHelper CsvReader.</remarks>
+	/// </summary> 
 	public class CsvReader {
 
 		public string Delimiter { get; private set; }
-		int delimLength;
-
-		/// <summary>
-		/// Size of the circular buffer. Buffer size limits max length of the CSV line that can be processed. 
-		/// </summary>
-		/// <remarks>Default buffer size is 32kb.</remarks>
-		public int BufferSize { get; set; } = 32768;
-
-		/// <summary>
-		/// If true start/end spaces are excluded from field values (except values in quotes). True by default.
-		/// </summary>
+		int delimLength; 
+		public int BufferSize { get; set; } = 32768; 
 		public bool TrimFields { get; set; } = true;
 
 		TextReader rdr;
+
+		char[] _buffer = null;
+		int _bufferLength;
+		int _bufferLoadThreshold;
+		int _lineStartPos = 0;
+		public int ActualBufferLen = 0;
+		List<Field> _fields = null;
+		int _fieldsCount = 0;
+		int _linesRead = 0;
 
 		public CsvReader(TextReader rdr) : this(rdr, ",") {
 		}
@@ -51,16 +36,7 @@ namespace NReco.Csv {
 			if (delimLength == 0)
 				throw new ArgumentException("Delimiter cannot be empty.");
 		}
-
-		char[] buffer = null;
-		int bufferLength;
-		int bufferLoadThreshold;
-		int lineStartPos = 0;
-		int actualBufferLen = 0;
-		List<Field> fields = null;
-		int fieldsCount = 0;
-		int linesRead = 0;
-
+ 
 		private int ReadBlockAndCheckEof(char[] buffer, int start, int len, ref bool eof) {
 			if (len == 0)
 				return 0;
@@ -72,22 +48,22 @@ namespace NReco.Csv {
 
 		private bool FillBuffer() {
 			var eof = false;
-			var toRead = bufferLength - actualBufferLen;
-			if (toRead>=bufferLoadThreshold) {
-				int freeStart = (lineStartPos + actualBufferLen) % buffer.Length;
-				if (freeStart>=lineStartPos) {
-					actualBufferLen += ReadBlockAndCheckEof(buffer, freeStart, buffer.Length - freeStart, ref eof);
-					if (lineStartPos>0)
-						actualBufferLen += ReadBlockAndCheckEof(buffer, 0, lineStartPos, ref eof);
+			var toRead = _bufferLength - ActualBufferLen;
+			if (toRead>=_bufferLoadThreshold) {
+				int freeStart = (_lineStartPos + ActualBufferLen) % _buffer.Length;
+				if (freeStart>=_lineStartPos) {
+					ActualBufferLen += ReadBlockAndCheckEof(_buffer, freeStart, _buffer.Length - freeStart, ref eof);
+					if (_lineStartPos>0)
+						ActualBufferLen += ReadBlockAndCheckEof(_buffer, 0, _lineStartPos, ref eof);
 				} else {
-					actualBufferLen += ReadBlockAndCheckEof(buffer, freeStart, toRead, ref eof);
+					ActualBufferLen += ReadBlockAndCheckEof(_buffer, freeStart, toRead, ref eof);
 				}
 			}
 			return eof;
 		}
 
 		private string GetLineTooLongMsg() {
-			return String.Format("CSV line #{1} length exceedes buffer size ({0})", BufferSize, linesRead);
+			return String.Format("CSV line #{1} length exceedes buffer size ({0})", BufferSize, _linesRead);
 		}
 
 		private int ReadQuotedFieldToEnd(int start, int maxPos, bool eof, ref int escapedQuotesCount) {
@@ -95,12 +71,11 @@ namespace NReco.Csv {
 			int chIdx;
 			char ch;
 			for (; pos<maxPos; pos++) {
-				chIdx = pos < bufferLength ? pos : pos % bufferLength;
-				ch = buffer[chIdx];
+				chIdx = pos < _bufferLength ? pos : pos % _bufferLength;
+				ch = _buffer[chIdx];
 				if (ch=='\"') {
 					bool hasNextCh = (pos + 1) < maxPos;
-					if (hasNextCh && buffer[(pos + 1) % bufferLength] == '\"') {
-						// double quote inside quote = just a content
+					if (hasNextCh && _buffer[(pos + 1) % _bufferLength] == '\"') { 
 						pos++;
 						escapedQuotesCount++;
 					} else {
@@ -108,9 +83,7 @@ namespace NReco.Csv {
 					}
 				}
 			}
-			if (eof) {
-				// this is incorrect CSV as quote is not closed
-				// but in case of EOF lets ignore that
+			if (eof) { 
 				return pos-1;
 			}
 			throw new InvalidDataException(GetLineTooLongMsg());
@@ -122,8 +95,8 @@ namespace NReco.Csv {
 			int offset = 1;
 			for (; offset<delimLength; offset++) {
 				pos = start + offset;
-				idx = pos < bufferLength ? pos : pos % bufferLength;
-				if (pos >= maxPos || buffer[idx] != Delimiter[offset])
+				idx = pos < _bufferLength ? pos : pos % _bufferLength;
+				if (pos >= maxPos || _buffer[idx] != Delimiter[offset])
 					return false;
 			}
 			end = start + offset -1;
@@ -131,75 +104,75 @@ namespace NReco.Csv {
 		}
 
 		private Field GetOrAddField(int startIdx) {
-			fieldsCount++;
-			while (fieldsCount > fields.Count)
-				fields.Add(new Field());
-			var f = fields[fieldsCount-1];
+			_fieldsCount++;
+			while (_fieldsCount > _fields.Count)
+				_fields.Add(new Field());
+			var f = _fields[_fieldsCount-1];
 			f.Reset(startIdx);
 			return f;
 		}
 
 		public int FieldsCount {
 			get {
-				return fieldsCount;
+				return _fieldsCount;
 			}
 		}
 
 		public string this[int idx] {
 			get {
-				if (idx < fieldsCount) {
-					var f = fields[idx];
-					return fields[idx].GetValue(buffer);
+				if (idx < _fieldsCount) {
+					var f = _fields[idx];
+					return _fields[idx].GetValue(_buffer);
 				}
 				return null;
 			}
 		}
 
 		public int GetValueLength(int idx) {
-			if (idx < fieldsCount) {
-				var f = fields[idx];
+			if (idx < _fieldsCount) {
+				var f = _fields[idx];
 				return f.Quoted ? f.Length-f.EscapedQuotesCount : f.Length;
 			}
 			return -1;
 		}
 
 		public void ProcessValueInBuffer(int idx, Action<char[],int,int> handler) {
-			if (idx < fieldsCount) {
-				var f = fields[idx];
-				if ((f.Quoted && f.EscapedQuotesCount > 0) || f.End>=bufferLength) {
-					var chArr = f.GetValue(buffer).ToCharArray();
+			if (idx < _fieldsCount) {
+				var f = _fields[idx];
+				if ((f.Quoted && f.EscapedQuotesCount > 0) || f.End>=_bufferLength) {
+					var chArr = f.GetValue(_buffer).ToCharArray();
 					handler(chArr, 0, chArr.Length);
 				} else if (f.Quoted) {
-					handler(buffer, f.Start + 1, f.Length - 2);
+					handler(_buffer, f.Start + 1, f.Length - 2);
 				} else { 
-					handler(buffer, f.Start, f.Length);
+					handler(_buffer, f.Start, f.Length);
 				}
 			}
 		}
 
 		public bool Read() {
-			if (fields == null) {
-				fields = new List<Field>();
-				fieldsCount = 0;
+			if (_fields == null) {
+				_fields = new List<Field>();
+				_fieldsCount = 0;
 			}
-			if (buffer==null) {
-				bufferLoadThreshold = Math.Min(BufferSize, 8192);
-				bufferLength = BufferSize + bufferLoadThreshold;
-				buffer = new char[bufferLength];
-				lineStartPos = 0;
-				actualBufferLen = 0;
+			if (_buffer==null) {
+				_bufferLoadThreshold = Math.Min(BufferSize, 8192);
+				_bufferLength = BufferSize + _bufferLoadThreshold;
+				_buffer = new char[_bufferLength];
+				_lineStartPos = 0;
+				ActualBufferLen = 0;
 			}
 
 			var eof = FillBuffer();
 
-			fieldsCount = 0;
-			if (actualBufferLen <= 0) {
+			_fieldsCount = 0;
+			if (ActualBufferLen <= 0) {
 				return false; // no more data
 			}
-			linesRead++;
+			_linesRead++;
 
-			int maxPos = lineStartPos + actualBufferLen;
-			int charPos = lineStartPos;
+			int maxPos = _lineStartPos + ActualBufferLen;
+			int charPos = _lineStartPos;
 
 			var currentField = GetOrAddField(charPos);
 			bool ignoreQuote = false;
@@ -209,14 +182,13 @@ namespace NReco.Csv {
 			int charBufIdx;
 			char ch;
 			for (; charPos < maxPos; charPos++) {
-				charBufIdx = charPos<bufferLength ? charPos : charPos % bufferLength;
-				ch = buffer[charBufIdx];
+				charBufIdx = charPos<_bufferLength ? charPos : charPos % _bufferLength;
+				ch = _buffer[charBufIdx];
 				switch (ch) {
 					case '\"':
 						if (ignoreQuote) {
 							currentField.End = charPos;
-						} else if (currentField.Quoted || currentField.Length>0) {
-							// current field already is quoted = lets treat quotes as usual chars
+						} else if (currentField.Quoted || currentField.Length>0) { 
 							currentField.End = charPos;
 							currentField.Quoted = false;
 							ignoreQuote = true;
@@ -229,7 +201,7 @@ namespace NReco.Csv {
 						}
 						break;
 					case '\r':
-						if ((charPos + 1) < maxPos && buffer[(charPos + 1) % bufferLength] == '\n') {
+						if ((charPos + 1) < maxPos && _buffer[(charPos + 1) % _bufferLength] == '\n') {
 							// \r\n handling
 							charPos++;
 						}
@@ -265,16 +237,14 @@ namespace NReco.Csv {
 				}
 
 			}
-			if (!eof) {
-				// line is not finished, but whole buffer was processed and not EOF
+			if (!eof) { 
 				throw new InvalidDataException(GetLineTooLongMsg());
 			}
 		LineEnded:
-			actualBufferLen -= charPos - lineStartPos;
-			lineStartPos = charPos%bufferLength;
+			ActualBufferLen -= charPos - _lineStartPos;
+			_lineStartPos = charPos%_bufferLength;
 
-			if (fieldsCount==1 && fields[0].Length==0) {
-				// skip empty lines
+			if (_fieldsCount==1 && _fields[0].Length==0) { 
 				return Read();
 			}
 
@@ -290,7 +260,7 @@ namespace NReco.Csv {
 			}
 			internal bool Quoted;
 			internal int EscapedQuotesCount;
-			string cachedValue = null;
+			string _cachedValue = null;
 
 			internal Field() {
 			}
@@ -300,15 +270,15 @@ namespace NReco.Csv {
 				End = start-1;
 				Quoted = false;
 				EscapedQuotesCount = 0;
-				cachedValue = null;
+				_cachedValue = null;
 				return this;
 			}
 			
 			internal string GetValue(char[] buf) {
-				if (cachedValue==null) {
-					cachedValue = GetValueInternal(buf);
+				if (_cachedValue==null) {
+					_cachedValue = GetValueInternal(buf);
 				}
-				return cachedValue;
+				return _cachedValue;
 			}
 
 			string GetValueInternal(char[] buf) {

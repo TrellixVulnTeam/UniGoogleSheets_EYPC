@@ -35,31 +35,79 @@ public class CodeGenerator
         classBuilder.Append($"}}\n");
     }
 
-    public void AddField(string fieldType, string fieldName)
+    public void AddField(string fieldType, string fieldName, string defaultValue = null)
     {
         if(status < Status.CURRENT_CLASS) throw  new Exception("class must be created before methods");
         status = Status.CURRENT_ADD_FIELDS;
-        fieldBuilder.AppendLine($"public {fieldType} {fieldName};  "); 
+        if(defaultValue == null)
+        {
+            fieldBuilder.Append($"public {fieldType} {fieldName};\n");
+        }
+        else
+        {
+            fieldBuilder.Append($"public {fieldType} {fieldName} = {defaultValue};\n");
+        } 
     }
 
-    public void AddMethod(string methodType, string methodName, string methodBody)
+    public void AddField(string accessor, string fieldType, string fieldName, string defaultValue = null)
+    {
+        if(status < Status.CURRENT_CLASS) throw  new Exception("class must be created before methods");
+        status = Status.CURRENT_ADD_FIELDS;
+        if(defaultValue == null)
+        {
+            fieldBuilder.AppendLine($"{accessor} {fieldType} {fieldName};"); 
+        }
+        else
+        {
+            fieldBuilder.AppendLine($"{accessor} {fieldType} {fieldName} = {defaultValue};"); 
+        } 
+    }
+
+    public void AddStaticField(string accessor, string fieldType, string fieldName, string defaultValue = null)
+    {
+        if(status < Status.CURRENT_CLASS) throw  new Exception("class must be created before methods");
+        status = Status.CURRENT_ADD_FIELDS;
+        
+        if(defaultValue == null)
+        {
+            fieldBuilder.AppendLine($"{accessor} static {fieldType} {fieldName};"); 
+        }
+        else
+        {
+            fieldBuilder.AppendLine($"{accessor} static {fieldType} {fieldName} = {defaultValue};"); 
+        }  
+    }
+
+
+    public void AddMethod(string accessor, string methodType, string methodName, string methodBody)
     {
         if(status < Status.CURRENT_CLASS) throw  new Exception("class must be created before methods");
         status = Status.CURRENT_ADD_METHODS;
-        methodBuilder.AppendLine($"public {methodType} {methodName}()");
+        methodBuilder.AppendLine($"{accessor} {methodType} {methodName}()");
         methodBuilder.AppendLine($"{{\n {methodBody} \n}}");
     }
+
     
+    
+    public void AddStaticMethod(string accessor, string methodType, string methodName, string methodBody)
+    {
+        if(status < Status.CURRENT_CLASS) throw  new Exception("class must be created before methods");
+        status = Status.CURRENT_ADD_METHODS;
+        methodBuilder.AppendLine($"{accessor} static {methodType} {methodName}()");
+        methodBuilder.AppendLine($"{{\n {methodBody} \n}}");
+    }
+
     
     public string GenerateCode()
     {
         if(status < Status.CURRENT_CLASS) throw  new Exception("class must be created before methods");
-        status = Status.NONE;
+        status = Status.NONE; 
+        var build = namespaceBuilder.ToString() + classBuilder.ToString().Replace(LAST_MARKER, fieldBuilder.ToString() + methodBuilder.ToString());
         classBuilder.Clear();
         fieldBuilder.Clear();
         methodBuilder.Clear();
         namespaceBuilder.Clear();
-        return namespaceBuilder.ToString() + classBuilder.ToString().Replace(LAST_MARKER, fieldBuilder.ToString() + methodBuilder.ToString());
+        return build ;
     }
     
     

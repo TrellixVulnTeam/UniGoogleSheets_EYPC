@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic; 
 using UnityEngine;
@@ -13,6 +14,19 @@ public class TestMonoBehaviour : MonoBehaviour
         
 
 
+        CodeGenerator generator = new CodeGenerator();
+        generator.UsingNamespace("System.Collections.Generic");
+        
+        generator.CreateClass("Game.Test", "ClassNameTest");
+        
+        generator.AddField("int", "userId");
+        generator.AddField("int", "userId2");
+        generator.AddField("int", "userId3");
+        
+        generator.AddMethod("void", "GetUsers", "//code");
+
+        var code = generator.GenerateCode();
+        Debug.Log(code);
     }
 
     // Update is called once per frame
@@ -21,3 +35,5 @@ public class TestMonoBehaviour : MonoBehaviour
         
     }
 }
+
+ 

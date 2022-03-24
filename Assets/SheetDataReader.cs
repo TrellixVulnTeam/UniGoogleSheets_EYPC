@@ -1,89 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 using NReco.Csv;
-using UnityEngine;
 
 
-public class SheetData
-{
-    public string NameSpace;
-    public string ClassName;
-    public List<SheetFieldInfo> FieldInfos = new List<SheetFieldInfo>();
-    public List<string> Comments = new List<string>();
-    public List<string> Datas = new List<string>();
-}
-
-public struct SheetFieldInfo
-{
-    public string FieldTypeKeyword;
-    public string FieldName;
-}
-
-
-/// <summary>
-/// The class that represents the data of a single row in the table.
-/// TODO :: 모든 Table 데이터는 CSV형태로 받아서 C# 내에서 처리한다. 
-/// </summary>
-public class SampleData
-{
-    static Dictionary<int, SampleData> Map = new Dictionary<int, SampleData>();
-    static List<SampleData> List = new List<SampleData>();
-    public int index;
-
-    public static void Load()
-    {
-        SheetData origin = null;
-        FieldInfo[] fields = origin.GetType().GetFields();
-        int idx = 0;
-        origin.Datas.ForEach(x =>
-        {
-            var sampleData = new SampleData();
-            var parserData = UniGoogleSheets.ParserContainer[origin.FieldInfos[idx].FieldName];
-            var value = parserData.Parser.Read(x); // TODO :: 여기서 데이터를 처리한다.  
-            fields[idx].SetValue(value, sampleData);
-            if (idx == origin.FieldInfos.Count)
-                idx = 0;
-
-            SampleData.Map.Add(sampleData.index, sampleData);
-        });
-    }
-}
-
-
-public interface ICSVFileReader
-{
-    string ReadFile(string path);
-}
-
-
-public abstract class AbstractCSVFileReader : ICSVFileReader
-{
-    protected String GetFullPathWithoutExtension(String path)
-    {
-        return System.IO.Path.Combine(System.IO.Path.GetDirectoryName(path),
-            System.IO.Path.GetFileNameWithoutExtension(path));
-    }
-
-    public abstract string ReadFile(string path);
-}
-
-public class CSVFileReaderFromResources : AbstractCSVFileReader
-{
-    public override string ReadFile(string path)
-    {
-        var filePath = GetFullPathWithoutExtension(path);
-        var asset = Resources.Load<TextAsset>(filePath);
-        if (asset == null)
-            throw new Exception("File not found : " + filePath);
-        if (asset != null) return asset.text;
-        return null;
-    }
-}
- 
- 
 public class SheetDataReader
 {
     public enum Mode
@@ -125,7 +45,7 @@ public class SheetDataReader
     
     public string GenerateCode(string @namespace, string @class)
     {
-        var data = ReadFromCSVData(@namespace, @class);
+        var data = GetSheetData(@namespace, @class);
         var generator = new CodeGenerator(); 
         generator.UsingNamespace("System.Collections.Generic"); 
         generator.CreateClass(@namespace, @class); 
@@ -154,7 +74,7 @@ public class SheetDataReader
 
         return generator.GenerateCode();
     }
-    public SheetData ReadFromCSVData(string @namespace, string @class)
+    public SheetData GetSheetData(string @namespace, string @class)
     { 
         var csv = _csvReader.ReadFile(GetFileFullPath(@namespace, @class));
         SheetData data = null;
@@ -196,6 +116,8 @@ public class SheetDataReader
                                         @class);
                 for (var i = 0; i < csvReader.FieldsCount; i++)
                     data.Datas.Add(csvReader[i]);
+
+                data.RowCount++;
             }
 
             currentRow++;

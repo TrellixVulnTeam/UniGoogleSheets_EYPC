@@ -10,10 +10,12 @@ public class TestMonoBehaviour : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        var data = UniGoogleSheets.SheetDataReader.ReadFromCSVData("Game.Data", "Test");
+        var data = UniGoogleSheets.SheetDataReader.GetSheetData("Game.Data", "Test");
 
         var code = UniGoogleSheets.SheetDataReader.GenerateCode("Game.Data", "Test");
 
+        Game.Data.Test.Load();
+        
         Debug.Log(code);
     }
 

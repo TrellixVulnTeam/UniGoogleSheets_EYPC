@@ -9,15 +9,15 @@ public class SheetNamespaceDataMap : Dictionary<string, List<SheetClassData>>
 
 public class SheetClassData
 {
-    public List<SheetFieldInfo> fieldInfos;
-    public List<string> comments;
-    public List<string> datas;
+    public List<SheetFieldInfo> FieldInfos;
+    public List<string> Comments;
+    public List<string> Datas;
 }
 
 public struct SheetFieldInfo
 {
-    public string fieldTypeKeyword;
-    public string fieldName;
+    public string FieldTypeKeyword;
+    public string FieldName;
 }
 
   
@@ -58,10 +58,10 @@ public class CSVReader
                     var nameAndKeyword = rows[i].Split(':');
                     var name = nameAndKeyword[0];
                     var keyword = nameAndKeyword[1];
-                    classData.fieldInfos.Add(new SheetFieldInfo()
+                    classData.FieldInfos.Add(new SheetFieldInfo()
                     {
-                        fieldName = name,
-                        fieldTypeKeyword = keyword
+                        FieldName = name,
+                        FieldTypeKeyword = keyword
                     });
                 }
 
@@ -73,7 +73,7 @@ public class CSVReader
                 var rows = line.Split(SPLIT_CHAR);
                 for (var i = 0; i < rows.Length; i++)
                 {
-                    classData.datas.Add(rows[i]);
+                    classData.Datas.Add(rows[i]);
                 }
             }
 

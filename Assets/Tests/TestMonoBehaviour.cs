@@ -15,14 +15,11 @@ public class TestMonoBehaviour : MonoBehaviour
 
 
         CodeGenerator generator = new CodeGenerator();
-        generator.UsingNamespace("System.Collections.Generic");
-        
-        generator.CreateClass("Game.Test", "ClassNameTest");
-        
+        generator.UsingNamespace("System.Collections.Generic"); 
+        generator.CreateClass("Game.Test", "ClassNameTest"); 
         generator.AddField("int", "userId");
         generator.AddField("int", "userId2");
-        generator.AddField("int", "userId3");
-        
+        generator.AddField("int", "userId3"); 
         generator.AddMethod("void", "GetUsers", "//code");
 
         var code = generator.GenerateCode();

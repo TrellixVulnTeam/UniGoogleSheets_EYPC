@@ -9,8 +9,9 @@ public class UniGoogleSheets
         this.context = new UniGoogleSheetsContext(new ParserContainer());
     }
     private UniGoogleSheetsContext context;
-    public ParserContainer ParserContainer => context.ParserContainer;
+    ParserContainer ParserContainer => context.ParserContainer;
 
+    
 
     public IBaseParser GetParser(string typeKeyword)
     {

@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Text;
-
-class CodeGenerator
+ 
+public class CodeGenerator
 {
     private readonly string LAST_MARKER = "__END__POINT__";
     private StringBuilder classBuilder = new StringBuilder();

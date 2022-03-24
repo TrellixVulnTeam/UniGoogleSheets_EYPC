@@ -17,7 +17,9 @@
  
 ## 고민? 
  - Node.js 자체 서버 지원이 필요한 상황 (사내 보안망에서만 실행 등)
- 
+ - 기존에는 Json 형식으로 데이터를 가지고 있었는데, CSV로 변경하거나 Binary형태로 만들려고 한다. (newtonsoft json 종속성 문제로 인해서)
+
+
 ## Docs
  - Parser        - string value를 알맞은 타입정보에 맞게 object 형태로 파싱  
  - Generator     - AST 트리 형태에서 알맞게 코드 생성  

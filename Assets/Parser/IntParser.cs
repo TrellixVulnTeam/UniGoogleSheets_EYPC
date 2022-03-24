@@ -6,7 +6,7 @@ public class IntParser : BaseParser
     /// <summary>
     /// in google sheet registered type.
     /// </summary>
-    public override string[] TypeDeclarations => new string[] {"int", "Int"}; 
+    public override string[] TypeKeywords => new string[] {"int", "Int"}; 
      
     public override Type Type => typeof(int);
 

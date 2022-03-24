@@ -6,17 +6,17 @@ public class UniGoogleSheets
 {
     public UniGoogleSheets()
     {
-        this.context = new UniGoogleSheetsContext(new TypeMap());
+        this.context = new UniGoogleSheetsContext(new ParserContainer());
     }
     private UniGoogleSheetsContext context;
-    public TypeMap TypeMap => context.TypeMap;
+    public ParserContainer ParserContainer => context.ParserContainer;
 
 
-    public IBaseType GetParser(string typeKeyword)
+    public IBaseParser GetParser(string typeKeyword)
     {
         try
         {
-            return TypeMap[typeKeyword].Parser;
+            return ParserContainer[typeKeyword].Parser;
         }
         catch (Exception e)
         {

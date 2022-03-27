@@ -21,6 +21,14 @@ namespace UniGS.Runtime.Protocol
             return query;
         }
     }
+
+    public class SpreadSheetReqParams : ParameterBase
+    {
+        public SpreadSheetReqParams(string spreadSheetId)
+        {
+            
+        }
+    }
  
     
     

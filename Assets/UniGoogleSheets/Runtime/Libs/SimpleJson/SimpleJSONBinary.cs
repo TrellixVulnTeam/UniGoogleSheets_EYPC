@@ -59,7 +59,7 @@ namespace UniGS.SimpleJSON
 		{
 			using (var gzipOut = new ICSharpCode.SharpZipLib.BZip2.BZip2OutputStream(aData))
 			{
-				gzipOut.IsStreamOwner = false;
+				gzipOut.IsStreamOwner = false;  ㅏ
 				SaveToBinaryStream(gzipOut);
 				gzipOut.Close();
 			}

@@ -37,6 +37,7 @@ namespace UniGS.Runtime
             classBuilder.Append($"namespace {@namespace} {{\n");
             classBuilder.Append($"public class {@classname}{{\n {LAST_MARKER} }}\n");
             classBuilder.Append($"}}\n");
+            
         }
 
         public void AddField(string fieldType, string fieldName, string defaultValue = null)

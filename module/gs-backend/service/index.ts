@@ -1,6 +1,6 @@
 
 
-function getSpreadSheetCSV(spreadsheetId: string) {
+function getSpreadSheetInfos(spreadsheetId: string) {
     const spreadSheet = SpreadsheetApp.openById(spreadsheetId);
     const sheetData: SheetData[] = []; 
     spreadSheet.getSheets().forEach(sheet => {
@@ -27,4 +27,6 @@ function getSpreadSheetCSV(spreadsheetId: string) {
         } 
         sheetData.push({ spreadSheetName: spreadSheet.getName(), sheetName: sheetName, csv: csv });
     });
+
+    return sheetData;
 }

@@ -7,10 +7,10 @@
    
  
 ## 고민? 
- - Node.js 자체 서버 지원이 필요한 상황 (사내 보안망에서만 실행 등)
+ - Node.js 자체 서버 지원이 필요한 상황이 있을까? (사내 보안망에서만 실행 등)
  - 기존에는 Json 형식으로 데이터를 가지고 있었는데, CSV로 변경하거나 Binary형태로 만들려고 한다. (newtonsoft json 종속성 문제로 인해서)  
  - AssetBundle 형태로 데이터를 가져오고 싶거나, 개발사 서버로부터 데이터를 가져오고 싶은경우?
-
+ - clasp + TypeScript 로 백엔드 다시 짜끼
  
   
 해당 프로젝트는 이전 [UnityGoogleSheets](https://ugs.shlife.dev)와 마이그레이션(호환) 되지 않음.

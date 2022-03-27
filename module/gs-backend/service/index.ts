@@ -1,5 +1,14 @@
 
 
+
+function createSpreadSheet(spreadSheetName : string, folderId : string){
+    const folder = DriveApp.getFolderById(folderId);
+    const spreadSheet = SpreadsheetApp.create(spreadSheetName);  
+    const file = DriveApp.getFileById(spreadSheet.getId());    
+          file.moveTo(folder);
+    return spreadSheet;
+}
+
 function getSpreadSheetInfos(spreadsheetId: string) {
     const spreadSheet = SpreadsheetApp.openById(spreadsheetId);
     const sheetData: SheetData[] = []; 

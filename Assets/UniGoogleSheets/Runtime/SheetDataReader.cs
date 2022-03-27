@@ -12,6 +12,7 @@ namespace UniGS.Runtime
         {
             FROM_RESOURCE,
             FROM_STREAMING_ASSET,
+            FROM_URL,
             FROM_FILE_PATH
         }
 
@@ -78,6 +79,9 @@ namespace UniGS.Runtime
                     $"new Dictionary<{key},{className}>()");
             }
 
+            {
+                generator.AddStaticField("public", "string", "SpreadSheetId", null);
+            }
 
             // Add Member
             foreach (var fieldInfo in data.FieldInfos)
@@ -119,9 +123,8 @@ Map.Add(origin.{keyFieldName}, origin);
             return generator.GenerateCode();
         }
 
-        public SheetData GetSheetData(string @namespace, string @class)
+        private SheetData CSVToSheetData(string csv, string @namespace, string @class)
         {
-            var csv = _csvReader.ReadFile(GetFileFullPath(@namespace, @class));
             SheetData data = null;
             using StringReader reader = new StringReader(csv);
             UniGS.NReco.Csv.CsvReader csvReader = new CsvReader(reader, ",");
@@ -166,9 +169,20 @@ Map.Add(origin.{keyFieldName}, origin);
                 }
 
                 currentRow++;
-            }
+            } 
+            return data; 
+        }
+        
+        
+        public SheetData GetSheetData(string @namespace, string @class)
+        {
+            var csv = _csvReader.ReadFile(GetFileFullPath(@namespace, @class));
+            return CSVToSheetData(csv, @namespace, @class);
+        }
 
-            return data;
+        public async Task <SheetData> GetSheetDataFromGoogleAsync(string @namespace, string @class, string sheetId)
+        { 
+            return null;
         }
     }
 }

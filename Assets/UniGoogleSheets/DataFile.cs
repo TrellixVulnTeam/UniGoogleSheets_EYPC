@@ -15,18 +15,28 @@ namespace Data
         };
 
 
-        [MenuItem("MyMenu/Do Something")]
-        public static void SaveTest(string @namespace, string @class, string csv)
+        [UnityEditor.MenuItem("MyMenu/Do Something")]
+        static void SaveTest(string @namespace, string @class, string csv)
         {
             Stream stream = new FileStream($"{@namespace}.{@class}.bin", FileMode.OpenOrCreate);  
             using GZipStream compressionStream = new GZipStream(stream, CompressionMode.Compress);
             using var writer = new BinaryWriter(compressionStream); 
             writer.Write(@namespace.Length); // 4byte
-            writer.Write(@namespace); // length
+         
+            
+            byte[] namespaceBytes = System.Text.Encoding.UTF8.GetBytes(@namespace);
+            writer.Write(namespaceBytes); // length
             writer.Write(@class.Length); // 4byte
             writer.Write(@class); // length 
+            
+            writer.Write(@class.Length); // 4byte
+            byte[] classBytes = System.Text.Encoding.UTF8.GetBytes(@class);
+            writer.Write(classBytes); // length
+            
+            
             writer.Write(csv.Length); // 4byte
-            writer.Write(csv); // length 
+            byte[] csvBytes = System.Text.Encoding.UTF8.GetBytes(csv);
+            writer.Write(csvBytes); // length
             writer.Close();  
         }
 

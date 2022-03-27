@@ -11,6 +11,12 @@ namespace UniGS.Runtime
         public static readonly IWebRequester WebRequester = new UniGSWebRequester();
 
 
+        public static void LoadAll()
+        {
+            
+        }
+         
+
         public static IBaseParser GetParser(string typeKeyword)
         {
             try

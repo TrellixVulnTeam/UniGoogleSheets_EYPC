@@ -1,4 +1,4 @@
-﻿public interface ICSVFileReader
+﻿public interface IResourceLoader
 {
     string ReadFile(string path);
 }

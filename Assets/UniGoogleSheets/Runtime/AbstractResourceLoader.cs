@@ -1,6 +1,6 @@
 ﻿using System;
 
-public abstract class AbstractCSVFileReader : ICSVFileReader
+public abstract class AbstractResourceLoader : IResourceLoader
 {
     protected String GetFullPathWithoutExtension(String path)
     {

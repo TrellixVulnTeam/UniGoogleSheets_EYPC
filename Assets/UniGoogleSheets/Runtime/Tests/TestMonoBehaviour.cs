@@ -15,7 +15,10 @@ public class TestMonoBehaviour : MonoBehaviour
         var code = UniGoogleSheets.SheetDataReader.GenerateCode("Game.Data", "Test");
 
         Game.Data.Test.Load();
-        
+        foreach (var keyValuePair in Game.Data.Test.Map)
+        {
+            Debug.Log(keyValuePair.Key);
+        }
         Debug.Log(code);
     }
 

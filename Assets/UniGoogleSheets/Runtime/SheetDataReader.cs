@@ -23,7 +23,7 @@ public class SheetDataReader
             if (value == Mode.FROM_RESOURCE)
             {
                 this.mode = value;
-                this._csvReader = new CSVFileReaderFromResources();
+                this._csvReader = new ResourceLoaderFromResources();
             }
         }
     }
@@ -37,7 +37,7 @@ public class SheetDataReader
 
     readonly char SPLIT_CHAR = ',', QUOTE_CHAR = '"';
     private readonly string CSV_DIR = null;
-    private ICSVFileReader _csvReader; 
+    private IResourceLoader _csvReader; 
     private string GetFileName(string @namespace, string @class) => $"{@namespace}.{@class}.csv"; 
     private string GetFileFullPath(string @namespace, string @class) =>
         Path.Combine(CSV_DIR, GetFileName(@namespace, @class));
@@ -75,12 +75,15 @@ public class SheetDataReader
             generator.AddField("public",keyword, name, null);
         }
 
+        
         generator.AppendLine($@"private static string FileName => ""{@namespace}.{@class}"" + Extension;");
         generator.AppendLine($@"private static string Extension => "".csv"" + Extension;");
+
+        var keyFieldName = data.FieldInfos[0].FieldName; 
         generator.AddStaticMethod("public", "void", "Load", $@"
 SheetData sheetData = UniGoogleSheets.SheetDataReader.GetSheetData(typeof({@class}).Namespace, nameof({@class})); 
 FieldInfo[] fields = typeof({@class}).GetFields(BindingFlags.Public | BindingFlags.Instance);
-int idx = 0; 
+int idx = 0;  
 for (int row = 0; row < sheetData.RowCount; row++)
 {{
 var origin = new {@class}();
@@ -94,8 +97,11 @@ var fieldValue = parserData.Parser.Read(datas[col]); // TODO :: 여기서 데이
 fields[col].SetValue(origin, fieldValue);
 }} 
 
- List.Add(origin); 
+List.Add(origin);
+Map.Add(origin.{keyFieldName}, origin); 
 }}
+
+
 
 ");
         return generator.GenerateCode();

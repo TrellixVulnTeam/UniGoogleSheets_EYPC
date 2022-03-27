@@ -1,7 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-public class CSVFileReaderFromResources : AbstractCSVFileReader
+public class ResourceLoaderFromResources : AbstractResourceLoader
 {
     public override string ReadFile(string path)
     {

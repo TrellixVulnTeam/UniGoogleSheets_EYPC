@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using NReco.Csv;
+using UniGS.NReco.Csv;
 
 
 public class SheetDataReader
@@ -36,8 +36,14 @@ public class SheetDataReader
     }
 
     readonly char SPLIT_CHAR = ',', QUOTE_CHAR = '"';
+    
+    /// <summary>
+    /// CSV Load Path
+    /// </summary>
     private readonly string CSV_DIR = null;
     private IResourceLoader _csvReader; 
+    
+    
     private string GetFileName(string @namespace, string @class) => $"{@namespace}.{@class}.csv"; 
     private string GetFileFullPath(string @namespace, string @class) =>
         Path.Combine(CSV_DIR, GetFileName(@namespace, @class));
@@ -111,7 +117,7 @@ Map.Add(origin.{keyFieldName}, origin);
         var csv = _csvReader.ReadFile(GetFileFullPath(@namespace, @class));
         SheetData data = null;
         using StringReader reader = new StringReader(csv);
-        NReco.Csv.CsvReader csvReader = new CsvReader(reader, ",");
+        UniGS.NReco.Csv.CsvReader csvReader = new CsvReader(reader, ",");
 
 
         if (reader.Peek() == -1)

@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO.Compression;
 using Data;
+using UniGS;
+using UniGS.Runtime;
 using UnityEngine;
 
 public class TestMonoBehaviour : MonoBehaviour
@@ -20,6 +22,16 @@ public class TestMonoBehaviour : MonoBehaviour
             Debug.Log(keyValuePair.Key);
         }
         Debug.Log(code);
+
+
+        Test();
+    }
+
+    public async void Test()
+    {
+        UniGSWebRequester uniGsWebRequester = new UniGSWebRequester();
+        var result = await uniGsWebRequester.Get("http://naver.com", null);
+        Debug.Log(result);
     }
 
     // Update is called once per frame

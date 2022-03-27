@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 
- 
+namespace UniGS.Runtime
+{
     public static class Utility
     {
         /// <summary>
@@ -18,4 +19,5 @@ using System.Linq;
                 .Where(p => type.IsAssignableFrom(p));
             return types;
         }
-    } 
+    }
+}

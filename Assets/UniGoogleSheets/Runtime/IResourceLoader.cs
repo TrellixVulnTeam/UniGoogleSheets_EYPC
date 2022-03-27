@@ -1,4 +1,7 @@
-﻿public interface IResourceLoader
+﻿namespace UniGS.Runtime
 {
-    string ReadFile(string path);
+    public interface IResourceLoader
+    {
+        string ReadFile(string path);
+    }
 }

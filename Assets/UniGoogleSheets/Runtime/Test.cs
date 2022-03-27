@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 using System.Collections;
-using System;
+using System; 
+using UniGS.Runtime;
+
 namespace Game.Data {
     public class Test{
         public static List<Test> List = new List<Test>();

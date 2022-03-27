@@ -2,20 +2,26 @@
 using UnityEngine;
 
 
-public static class UniGoogleSheets
+namespace UniGS.Runtime
 {
-    public static readonly ParserContainer ParserContainer = new ParserContainer();
-    public static readonly SheetDataReader SheetDataReader = new SheetDataReader("TableData/"); 
-    public static IBaseParser GetParser(string typeKeyword)
+    public static class UniGoogleSheets
     {
-        try
+        public static readonly ParserContainer ParserContainer = new ParserContainer();
+        public static readonly SheetDataReader SheetDataReader = new SheetDataReader("TableData/");
+        public static readonly IWebRequester WebRequester = new UniGSWebRequester();
+
+
+        public static IBaseParser GetParser(string typeKeyword)
         {
-            return ParserContainer[typeKeyword].Parser;
+            try
+            {
+                return ParserContainer[typeKeyword].Parser;
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                return null;
+            }
         }
-        catch (Exception e)
-        {
-            Debug.LogError(e);
-            return null;
-        }
-    } 
+    }
 }

@@ -1,30 +1,33 @@
 ﻿using System.Collections.Generic;
 
-public class SheetData
+namespace UniGS.Runtime
 {
-    public string NameSpace;
-    public string ClassName;
-    public List<SheetFieldInfo> FieldInfos = new List<SheetFieldInfo>();
-    public List<string> Comments = new List<string>();
-    public List<string> Datas = new List<string>();
-
-    public int RowCount;
-    public int FieldCount => FieldInfos.Count;
-    
-    public List<string> GetRowValues(int rowNumber)
+    public class SheetData
     {
-        List<string> rows = new List<string>();
-        var start = rowNumber * FieldCount;
-        var end = start + FieldCount;
+        public string NameSpace;
+        public string ClassName;
+        public List<SheetFieldInfo> FieldInfos = new List<SheetFieldInfo>();
+        public List<string> Comments = new List<string>();
+        public List<string> Datas = new List<string>();
 
-        for (int i = start; i < end; i++)
-            rows.Add(Datas[i]); 
-        return rows;
-    } 
-}
+        public int RowCount;
+        public int FieldCount => FieldInfos.Count;
 
-public struct SheetFieldInfo
-{
-    public string FieldTypeKeyword;
-    public string FieldName;
+        public List<string> GetRowValues(int rowNumber)
+        {
+            List<string> rows = new List<string>();
+            var start = rowNumber * FieldCount;
+            var end = start + FieldCount;
+
+            for (int i = start; i < end; i++)
+                rows.Add(Datas[i]);
+            return rows;
+        }
+    }
+
+    public struct SheetFieldInfo
+    {
+        public string FieldTypeKeyword;
+        public string FieldName;
+    }
 }

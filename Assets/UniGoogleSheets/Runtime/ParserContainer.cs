@@ -4,55 +4,57 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
- 
-/// <summary>
-/// 타입 정보를 저장하는 클래스
-/// </summary>
-public struct ParserData
+namespace UniGS.Runtime
 {
-    public System.Type Type;
-    public IBaseParser Parser;
-}
-
-
-public class ParserContainer : Dictionary<string, ParserData>
-{
-    public ParserContainer ()
+    /// <summary>
+    /// 타입 정보를 저장하는 클래스
+    /// </summary>
+    public struct ParserData
     {
-        Initialize();
+        public System.Type Type;
+        public IBaseParser Parser;
     }
 
-    public void Initialize()
+
+    public class ParserContainer : Dictionary<string, ParserData>
     {
-        HashSet<string> duplicateDeclartionChecker = new HashSet<string>();
-        Utility.GetAllSubclassOf(typeof(BaseParser)).ToList().ForEach(value =>
+        public ParserContainer()
         {
-            if (value.IsAbstract == false)
+            Initialize();
+        }
+
+        public void Initialize()
+        {
+            HashSet<string> duplicateDeclartionChecker = new HashSet<string>();
+            Utility.GetAllSubclassOf(typeof(BaseParser)).ToList().ForEach(value =>
             {
-                var typeInstance = Activator.CreateInstance(value) as BaseParser;
-                var typeValueData = new ParserData()
+                if (value.IsAbstract == false)
                 {
-                    Type = typeInstance.Type,
-                    Parser = Activator.CreateInstance(value) as IBaseParser
-                };
+                    var typeInstance = Activator.CreateInstance(value) as BaseParser;
+                    var typeValueData = new ParserData()
+                    {
+                        Type = typeInstance.Type,
+                        Parser = Activator.CreateInstance(value) as IBaseParser
+                    };
 
-                for (var i = 0; i < typeInstance.TypeKeywords.Length; i++)
-                {
-                    var key = typeInstance.TypeKeywords[i];
-                    if (this.ContainsKey(key))
-                        throw new Exception($"({typeInstance.GetType().Name})Duplicate Type Declaration : " + key +
-                                            $" already used by {this[key].Parser.GetType().Name}");
-                    this.Add(key, typeValueData);
+                    for (var i = 0; i < typeInstance.TypeKeywords.Length; i++)
+                    {
+                        var key = typeInstance.TypeKeywords[i];
+                        if (this.ContainsKey(key))
+                            throw new Exception($"({typeInstance.GetType().Name})Duplicate Type Declaration : " + key +
+                                                $" already used by {this[key].Parser.GetType().Name}");
+                        this.Add(key, typeValueData);
+                    }
                 }
-            }
-        }); 
-    }
+            });
+        }
 
 
-    public void GetValue(string declaration, string value)
-    {
-        
+        public void GetValue(string declaration, string value)
+        {
+
+        }
+
+
     }
-    
- 
 }

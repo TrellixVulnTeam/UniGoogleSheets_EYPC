@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-
-public interface IWebRequester
+namespace UniGS.Runtime
 {
-    Task<string> Get(string uri, string queryParams);
-    Task<string> Post(string uri, string queryParams);
+
+    public interface IWebRequester
+    {
+        Task<string> Get(string uri, string queryParams);
+        Task<string> Post(string uri, string queryParams, string body);
+    }
 }

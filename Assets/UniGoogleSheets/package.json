@@ -1,0 +1,20 @@
+{
+  "name": "com.shlifedev.unigooglesheets",
+  "version": "1.0.0",
+  "displayName": "Uni Google Sheets",
+  "description": "This is an extension for Google Sheets that allows you to easily access and manipulate data in Google Sheets. ",
+  "unity": "2019.1",
+  "unityRelease": "0b5",
+  "dependencies": {
+  },
+  "keywords": [
+    "Google Sheets",
+    "Google Spreadsheets",
+    "GameTable",
+  ],
+  "author": {
+    "name": "shlifedev",
+    "email": "shlifedev@gmail.com",
+    "url": "https://shlife.dev"
+  }
+}

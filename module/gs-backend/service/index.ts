@@ -15,6 +15,7 @@ function getSpreadSheetInfos(spreadsheetId: string) {
     spreadSheet.getSheets().forEach(sheet => {
         const sheetName = sheet.getName();
         const data = sheet.getDataRange().getValues();
+        
         let csv = "";
         if (data.length > 1) { 
             for (var row = 0; row < data.length; row++) {

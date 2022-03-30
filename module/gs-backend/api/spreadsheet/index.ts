@@ -1,12 +1,9 @@
-interface ReqGetSpreadSheet extends RequestBase{ 
-     
-}
-
+ 
 interface ReqGetSpreadSheetParameter extends BaseParameter{
     spreadSheetId : string;
 }
 
-interface SheetData{
+interface SpreadSheetInfo{
     spreadSheetName : string;
     sheetName : string;
     csv : string;

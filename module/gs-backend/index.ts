@@ -16,5 +16,4 @@ function doGet(e: any): any{
 
 function doPost(e: any): any{
 
-}
-
+}  

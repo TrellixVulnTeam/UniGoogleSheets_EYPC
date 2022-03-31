@@ -10,7 +10,7 @@ using UnityEngine.Networking;
 namespace UniGS.Runtime
 {
     public class UniGSWebRequester : IWebRequester
-    {
+    { 
         private bool isRequesting = false;
 
         public Task<string> Get(string uri, string queryParams)
